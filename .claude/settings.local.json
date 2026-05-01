@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(mkdir -p \"sign-in/[[...rest]]\")",
+      "Bash(mkdir -p \"sign-up/[[...rest]]\")",
+      "Bash(mkdir -p \"C:/Users/catac/webprojects/liftingdiarycourse/src/db\")",
+      "Bash(mkdir -p \"C:/Users/catac/webprojects/liftingdiarycourse/drizzle\")",
+      "Bash(npx drizzle-kit *)",
+      "Bash(npx tsc *)",
+      "mcp__neon__list_projects",
+      "mcp__neon__describe_table_schema",
+      "mcp__neon__prepare_database_migration",
+      "mcp__neon__run_sql",
+      "mcp__neon__run_sql_transaction",
+      "mcp__neon__describe_branch",
+      "mcp__neon__describe_project",
+      "mcp__neon__complete_database_migration"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "neon"
+  ]
+}

@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lifting Diary
 
-## Getting Started
+A workout logging application built with Next.js, Clerk authentication, and Neon Postgres (Drizzle ORM).
 
-First, run the development server:
+## Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Lifting Diary is a web application for tracking workouts. Users can create workout sessions, add exercises from a library, and log sets with weight and reps.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router) + React 19 |
+| Styling | Tailwind CSS v4 |
+| Auth | Clerk |
+| Database | Neon Postgres |
+| ORM | Drizzle ORM |
+| Deployment | Vercel |
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                           Client                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │  Next.js    │  │  Clerk      │  │  Base UI + Tailwind     │  │
+│  │  App Router │  │  Auth Flow  │  │  Components             │  │
+│  └──────┬──────┘  └──────┬──────┘  └─────────────────────────┘  │
+└─────────┼────────────────┼─────────────────────────────────────┘
+          │                │
+          ▼                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        API Layer                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Clerk Middleware (src/proxy.ts)             │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Database Layer                             │
+│  ┌─────────────────┐    ┌─────────────────┐                   │
+│  │  Neon Postgres  │    │  Drizzle ORM    │                   │
+│  │  (serverless)   │◄──►│  (src/db/)      │                   │
+│  └─────────────────┘    └─────────────────┘                   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database Schema
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+┌──────────────┐         ┌──────────────────┐         ┌──────────────┐
+│   exercises   │         │ workoutExercises │         │    sets      │
+├──────────────┤         ├──────────────────┤         ├──────────────┤
+│ id (PK)      │◄─────── │ id (PK)          │         │ id (PK)      │
+│ name         │         │ workoutId (FK)   │┐        │ workoutExId  │
+│ createdAt    │         │ exerciseId (FK)  ││        │ setNumber   │
+│ updatedAt    │         │ order            ││        │ weight      │
+└──────────────┘         │ createdAt        ││        │ reps        │
+      ▲                  └──────────────────┘│        │ createdAt   │
+      │                           ▲           │        └──────────────┘
+      │                           │           │
+      │                           │           │
+┌──────────────┐         ┌──────────────────┘
+│   workouts   │
+├──────────────┤
+│ id (PK)      │
+│ userId (FK)  │ ──────► (Clerk user ID)
+│ name         │
+│ startedAt    │
+│ completedAt  │
+│ createdAt    │
+│ updatedAt    │
+└──────────────┘
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Table Descriptions
 
-## Learn More
+**exercises** - Predefined exercise library
+- `name` - Unique exercise name (e.g., "Bench Press", "Squat")
 
-To learn more about Next.js, take a look at the following resources:
+**workouts** - Individual workout sessions
+- `userId` - Clerk authentication ID
+- `name` - Workout name (e.g., "Push Day", "Leg Day")
+- `startedAt` / `completedAt` - Workout timing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**workoutExercises** - Links exercises to workouts
+- `workoutId` - References parent workout
+- `exerciseId` - References exercise from library
+- `order` - Display order within workout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**sets** - Individual sets within an exercise
+- `workoutExerciseId` - References parent workout exercise
+- `setNumber` - Set number (1, 2, 3...)
+- `weight` / `reps` - Lifting data
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── layout.tsx          # Root layout with ClerkProvider
+│   ├── page.tsx            # Home page
+│   ├── sign-in/           # Clerk sign-in route
+│   └── sign-up/           # Clerk sign-up route
+├── components/
+│   └── AuthHeader.tsx      # App header with auth state
+└── db/
+    ├── index.ts            # Drizzle client + re-exports
+    └── schema.ts           # Table definitions + relations
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+DATABASE_URL=postgresql://user:pass@host/db
+```
+
+## Commands
+
+```bash
+npm run dev          # Development server
+npm run build        # Production build
+npm run start        # Production server
+npm run lint         # ESLint
+npx drizzle-kit generate  # Generate migrations
+npx drizzle-kit push    # Push schema (dev)
+npx drizzle-kit migrate # Apply migrations
+```
+
+## Authentication Flow
+
+1. Unauthenticated users see sign-in/sign-up pages
+2. Clerk handles authentication via OAuth
+3. User ID from Clerk is stored in `workouts.userId`
+4. Protected routes redirect to sign-in
+
+## Database Relations
+
+Drizzle relations enable eager loading:
+
+```typescript
+// Fetch workout with all exercises and sets
+const result = await db.query.workouts.findFirst({
+  where: eq(workouts.id, 1),
+  with: {
+    workoutExercises: {
+      with: {
+        exercise: true,
+        sets: true
+      }
+    }
+  }
+})
+```
