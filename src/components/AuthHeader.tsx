@@ -13,7 +13,7 @@ function AuthModal({ children, open, onClose, component: Component }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <Component routing="hash" />
+        <Component routing="path" path="/sign-in" />
       </div>
     </div>
   );
