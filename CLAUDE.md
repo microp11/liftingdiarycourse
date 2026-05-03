@@ -22,6 +22,13 @@ npm run lint     # Run ESLint
 - **Fonts**: Uses `next/font/google` for Geist and Geist_Mono fonts.
 - **Layout**: Root layout in `src/app/layout.tsx` wraps all pages. Uses flex column with antialiased styling.
 
+## Documentation
+
+**CRITICAL: Before writing or modifying ANY code, you MUST first read the relevant docs file(s) in the `/docs` directory.** These docs contain project-specific conventions, patterns, and decisions that must be followed. Never skip this step — it is not optional. Add to this best practices as per:
+
+- /docs/ui.md
+- /docs/data-fetching.md
+
 ## Key Files
 
 - `src/app/layout.tsx` - Root layout with font configuration and metadata
