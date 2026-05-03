@@ -24,7 +24,10 @@ npm run lint     # Run ESLint
 
 ## Documentation
 
-**CRITICAL: Before writing or modifying ANY code, you MUST first read the relevant docs file(s) in the `/docs` directory.** These docs contain project-specific conventions, patterns, and decisions that must be followed. Never skip this step — it is not optional.
+**CRITICAL: Before writing or modifying ANY code, you MUST first read the relevant docs file(s) in the `/docs` directory.** These docs contain project-specific conventions, patterns, and decisions that must be followed. Never skip this step — it is not optional. Add to this best practices as per:
+
+- /docs/ui.md
+- /docs/data-fetching.md
 
 ## Key Files
 
