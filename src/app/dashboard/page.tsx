@@ -1,4 +1,3 @@
-import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -7,9 +6,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { format } from "date-fns";
+import { auth } from "@clerk/nextjs/server";
+import { getWorkoutsByDate } from "@/data/helpers";
+import { DashboardCalendar } from "@/components/DashboardCalendar";
 
-export default function DashboardPage() {
+interface PageProps {
+  searchParams: Promise<{ date?: string }>;
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
+  const { userId } = await auth();
+  const params = await searchParams;
   const today = new Date();
+  const selectedDate = params.date
+    ? new Date(params.date + "T00:00:00")
+    : today;
+
+  if (!userId) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <p className="text-center text-muted-foreground">
+          Please sign in to view your workouts
+        </p>
+      </div>
+    );
+  }
+
+  const workouts = await getWorkoutsByDate(userId, selectedDate);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -18,15 +41,11 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Select Date</CardTitle>
             <CardDescription>
-              {format(today, "do MMM yyyy")}
+              {format(selectedDate, "do MMM yyyy")}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Calendar
-              mode="single"
-              selected={today}
-              className="rounded-md border"
-            />
+            <DashboardCalendar selectedDate={selectedDate} />
           </CardContent>
         </Card>
 
@@ -36,14 +55,40 @@ export default function DashboardPage() {
             <CardDescription>
               Workouts logged for{" "}
               <span className="font-medium text-foreground">
-                {format(today, "do MMM yyyy")}
+                {format(selectedDate, "do MMM yyyy")}
               </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
-              No workouts logged for this date
-            </div>
+            {workouts.length === 0 ? (
+              <div className="flex items-center justify-center h-32 text-muted-foreground">
+                No workouts logged for this date
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {workouts.map((workout) => (
+                  <div
+                    key={workout.id}
+                    className="p-4 border rounded-lg bg-card"
+                  >
+                    <h3 className="font-medium">{workout.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {workout.startedAt
+                        ? format(workout.startedAt, "h:mm a")
+                        : "Not started"}
+                      {workout.completedAt &&
+                        ` - ${format(workout.completedAt, "h:mm a")}`}
+                    </p>
+                    {workout.workoutExercises.length > 0 && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {workout.workoutExercises.length} exercise
+                        {workout.workoutExercises.length !== 1 ? "s" : ""}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
