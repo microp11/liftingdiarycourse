@@ -33,7 +33,8 @@
       "Bash(git checkout *)",
       "Bash(git stash *)",
       "Bash(npx next *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(npx vercel *)"
     ]
   },
   "enableAllProjectMcpServers": true,
