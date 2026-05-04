@@ -7,7 +7,7 @@ function AuthModal({ children, open, onClose, component: Component }: {
   children: React.ReactNode;
   open: boolean;
   onClose: () => void;
-  component: React.ComponentType<{ routing: "path"; path: string }>;
+  component: React.ComponentType<any>;
 }) {
   if (!open) return children;
   return (
