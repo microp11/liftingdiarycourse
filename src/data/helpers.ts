@@ -60,3 +60,35 @@ export async function createWorkout(userId: string, data: CreateWorkoutInput) {
     })
     .returning();
 }
+
+export async function getWorkoutById(workoutId: string, userId: string) {
+  return db.query.workouts.findFirst({
+    where: and(eq(workouts.id, workoutId), eq(workouts.userId, userId)),
+    with: {
+      workoutExercises: {
+        with: {
+          exercise: true,
+          sets: true,
+        },
+      },
+    },
+  });
+}
+
+export async function updateWorkout(
+  workoutId: string,
+  userId: string,
+  data: { name?: string; startedAt?: Date | null; completedAt?: Date | null }
+) {
+  return db
+    .update(workouts)
+    .set(data)
+    .where(and(eq(workouts.id, workoutId), eq(workouts.userId, userId)))
+    .returning();
+}
+
+export async function deleteWorkout(workoutId: string, userId: string) {
+  return db
+    .delete(workouts)
+    .where(and(eq(workouts.id, workoutId), eq(workouts.userId, userId)));
+}
