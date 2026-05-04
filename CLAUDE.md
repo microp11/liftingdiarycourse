@@ -28,6 +28,8 @@ npm run lint     # Run ESLint
 
 - /docs/ui.md
 - /docs/data-fetching.md
+- /docs/auth.md
+- /docs/data-mutations.md
 
 ## Key Files
 

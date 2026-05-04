@@ -1,16 +1,15 @@
 import { integer, pgTable, text, timestamp, decimal } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { nanoid } from "nanoid";
 
 export const exercises = pgTable("exercises", {
-  id: text().primaryKey().$defaultFn(() => nanoid()),
+  id: text().primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text().notNull().unique(),
   createdAt: timestamp().defaultNow(),
   updatedAt: timestamp().defaultNow(),
 });
 
 export const workouts = pgTable("workouts", {
-  id: text().primaryKey().$defaultFn(() => nanoid()),
+  id: text().primaryKey().$defaultFn(() => crypto.randomUUID()),
   userId: text().notNull(),
   name: text().notNull(),
   startedAt: timestamp(),
@@ -20,7 +19,7 @@ export const workouts = pgTable("workouts", {
 });
 
 export const workoutExercises = pgTable("workoutExercises", {
-  id: text().primaryKey().$defaultFn(() => nanoid()),
+  id: text().primaryKey().$defaultFn(() => crypto.randomUUID()),
   workoutId: text().notNull().references(() => workouts.id),
   exerciseId: text().notNull().references(() => exercises.id),
   order: integer().notNull(),
@@ -28,7 +27,7 @@ export const workoutExercises = pgTable("workoutExercises", {
 });
 
 export const sets = pgTable("sets", {
-  id: text().primaryKey().$defaultFn(() => nanoid()),
+  id: text().primaryKey().$defaultFn(() => crypto.randomUUID()),
   workoutExerciseId: text().notNull().references(() => workoutExercises.id),
   setNumber: integer().notNull(),
   weight: decimal({ precision: 10, scale: 2 }),
