@@ -76,10 +76,19 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                         ` - ${format(workout.completedAt, "h:mm a")}`}
                     </p>
                     {workout.workoutExercises.length > 0 && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {workout.workoutExercises.length} exercise
-                        {workout.workoutExercises.length !== 1 ? "s" : ""}
-                      </p>
+                      <div className="mt-3 grid gap-2">
+                        <p className="text-sm font-medium text-muted-foreground">Exercises</p>
+                        {workout.workoutExercises.map((we) => (
+                          <div key={we.id} className="p-2 border rounded bg-muted/50 text-sm">
+                            <p className="font-medium">{we.exercise.name}</p>
+                            <p className="text-muted-foreground">
+                              {we.sets.length} set{we.sets.length !== 1 ? "s" : ""}
+                              {we.sets[0]?.weight && ` • ${we.sets[0].weight} lbs`}
+                              {we.sets[0]?.reps && ` x ${we.sets[0].reps} reps`}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </Link>
                 ))}
