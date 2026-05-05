@@ -39,7 +39,8 @@
       "Bash(claude *)",
       "Bash(gh auth *)",
       "Bash(winget install *)",
-      "Bash(git --version)"
+      "Bash(git --version)",
+      "Bash(taskkill /F /IM node.exe)"
     ]
   },
   "enableAllProjectMcpServers": true,
