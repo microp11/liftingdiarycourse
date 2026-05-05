@@ -1,12 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { auth } from "@clerk/nextjs/server";
+import Link from "next/link";
 import { getWorkoutsByDate } from "@/data/helpers";
 import { DashboardCalendar } from "@/components/DashboardCalendar";
 
@@ -67,9 +62,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             ) : (
               <div className="space-y-4">
                 {workouts.map((workout) => (
-                  <div
+                  <Link
                     key={workout.id}
-                    className="p-4 border rounded-lg bg-card"
+                    href={`/dashboard/workout/${workout.id}`}
+                    className="block p-4 border rounded-lg bg-card hover:bg-accent transition-colors"
                   >
                     <h3 className="font-medium">{workout.name}</h3>
                     <p className="text-sm text-muted-foreground">
@@ -85,7 +81,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                         {workout.workoutExercises.length !== 1 ? "s" : ""}
                       </p>
                     )}
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
